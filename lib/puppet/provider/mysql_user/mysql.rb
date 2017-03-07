@@ -75,6 +75,7 @@ Puppet::Type.type(:mysql_user).provide(:mysql, :parent => Puppet::Provider::Mysq
       end
       @property_hash[:ensure] = :present
       @property_hash[:plugin] = plugin
+      @property_hash[:authentication_string] = authentication_string
     else
       mysql([defaults_file, system_database, '-e', "CREATE USER '#{merged_name}' IDENTIFIED BY PASSWORD '#{password_hash}'"].compact)
       @property_hash[:ensure] = :present
