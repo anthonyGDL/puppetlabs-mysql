@@ -35,7 +35,8 @@ Puppet::Type.type(:mysql_user).provide(:mysql, :parent => Puppet::Provider::Mysq
           :max_connections_per_hour => @max_connections_per_hour,
           :max_queries_per_hour     => @max_queries_per_hour,
           :max_updates_per_hour     => @max_updates_per_hour,
-          :tls_options              => @tls_options
+          :tls_options              => @tls_options,
+          :authentication_string    => @authentication_string
          )
     end
   end
@@ -54,6 +55,7 @@ Puppet::Type.type(:mysql_user).provide(:mysql, :parent => Puppet::Provider::Mysq
   def create
     merged_name              = @resource[:name].sub('@', "'@'")
     password_hash            = @resource.value(:password_hash)
+    authentication_string    = @resource.value(:authentication_string)
     plugin                   = @resource.value(:plugin)
     max_user_connections     = @resource.value(:max_user_connections) || 0
     max_connections_per_hour = @resource.value(:max_connections_per_hour) || 0
@@ -66,8 +68,8 @@ Puppet::Type.type(:mysql_user).provide(:mysql, :parent => Puppet::Provider::Mysq
     if !plugin.nil?
       if plugin == 'sha256_password' and !password_hash.nil?
         mysql([defaults_file, system_database, '-e', "CREATE USER '#{merged_name}' IDENTIFIED WITH '#{plugin}' AS '#{password_hash}'"].compact)
-      elsif plugin["pam"]
-        mysql([defaults_file, system_database, '-e', "CREATE USER '#{merged_name}' IDENTIFIED WITH #{plugin}"].compact)
+      elsif plugin == 'pam' and !authentication_string.nil?
+        mysql([defaults_file, system_database, '-e', "CREATE USER '#{merged_name}' IDENTIFIED WITH '#{plugin}' AS '#{authentication_string}'"].compact)
       else
         mysql([defaults_file, system_database, '-e', "CREATE USER '#{merged_name}' IDENTIFIED WITH '#{plugin}'"].compact)
       end
