@@ -36,7 +36,7 @@ Puppet::Type.type(:mysql_user).provide(:mysql, :parent => Puppet::Provider::Mysq
           :max_queries_per_hour     => @max_queries_per_hour,
           :max_updates_per_hour     => @max_updates_per_hour,
           :tls_options              => @tls_options,
-          :authentication_string    => @authentication_string
+          :authentication_string    => @password
          )
     end
   end
