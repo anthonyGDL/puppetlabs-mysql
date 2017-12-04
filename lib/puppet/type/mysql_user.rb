@@ -48,6 +48,11 @@ Puppet::Type.newtype(:mysql_user) do
     newvalue(%r{\w*})
   end
 
+  newproperty(:authentication_string) do
+    desc 'The authentication plugin of the user.'
+    newvalue(/\w+/)
+  end
+    
   newproperty(:plugin) do
     desc 'The authentication plugin of the user.'
     newvalue(%r{\w+})
